@@ -1,16 +1,17 @@
 import 'express-async-errors'
 import express from 'express'
-import { AppDataSource } from './data-source'
 import { errorMiddleware } from './middlewares/error'
 import routes from './routes'
 
-AppDataSource.initialize().then(() => {
-	const app = express()
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-	app.use(express.json())
+const app = express()
 
-	app.use(routes)
+app.use(express.json())
 
-	app.use(errorMiddleware)
-	return app.listen(process.env.PORT)
-})
+app.use(routes)
+
+app.use(errorMiddleware)
+
+app.listen(process.env.PORT || 3000)

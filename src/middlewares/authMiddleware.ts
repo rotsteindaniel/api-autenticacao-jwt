@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import { UnauthorizedError } from '../helpers/api-erros'
-import { userRepository } from '../repositories/userRepository'
 import jwt from 'jsonwebtoken'
+
+import { users } from '../controllers/UserController'
 
 type JwtPayload = {
 	id: number
@@ -22,7 +23,9 @@ export const authMiddleware = async (
 
 	const { id } = jwt.verify(token, process.env.JWT_PASS ?? '') as JwtPayload
 
-	const user = await userRepository.findOneBy({ id })
+	const user = users.find((user) => {
+		return String(user.id) === String(id);
+	});
 
 	if (!user) {
 		throw new UnauthorizedError('Não autorizado')

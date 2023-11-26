@@ -1,14 +1,24 @@
 import { Request, Response } from 'express'
 import { BadRequestError } from '../helpers/api-erros'
-import { userRepository } from '../repositories/userRepository'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
+export let users: User[] = [];
+export interface User {
+	id?: string,
+	name?: string;
+	email?: string;
+	password?: string;
+}
 export class UserController {
+	async getAll(req: Request, res: Response) {
+		return res.status(200).json(users)
+	}
+
 	async create(req: Request, res: Response) {
 		const { name, email, password } = req.body
 
-		const userExists = await userRepository.findOneBy({ email })
+		const userExists = users.some((user) => user.email === email);
 
 		if (userExists) {
 			throw new BadRequestError('E-mail já existe')
@@ -16,41 +26,42 @@ export class UserController {
 
 		const hashPassword = await bcrypt.hash(password, 10)
 
-		const newUser = userRepository.create({
+		const newUser = {
+			id: JSON.stringify(Math.random()*1000000000000000),
 			name,
 			email,
 			password: hashPassword,
-		})
+		};
 
-		await userRepository.save(newUser)
+		users.push(newUser);
 
-		const { password: _, ...user } = newUser
-
-		return res.status(201).json(user)
+		return res.status(201).json(newUser)
 	}
 
 	async login(req: Request, res: Response) {
 		const { email, password } = req.body
 
-		const user = await userRepository.findOneBy({ email })
+		const user = users.find((user) => user.email === email)
 
 		if (!user) {
 			throw new BadRequestError('E-mail ou senha inválidos')
 		}
 
-		const verifyPass = await bcrypt.compare(password, user.password)
+		const verifyPass = await bcrypt.compare(password, user.password as string)
 
 		if (!verifyPass) {
 			throw new BadRequestError('E-mail ou senha inválidos')
 		}
 
-		const token = jwt.sign({ id: user.id }, process.env.JWT_PASS ?? '', {
+		let token: string | undefined;
+
+		token = jwt.sign({ id: user.id }, process.env.JWT_PASS ?? '', {
 			expiresIn: '8h',
 		})
 
 		const { password: _, ...userLogin } = user
 
-		return res.json({
+		return res.status(200).json({
 			user: userLogin,
 			token: token,
 		})

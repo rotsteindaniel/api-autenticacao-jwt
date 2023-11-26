@@ -4,6 +4,7 @@ import { authMiddleware } from './middlewares/authMiddleware'
 
 const routes = Router()
 
+routes.get('/users', new UserController().getAll)
 routes.post('/user', new UserController().create)
 routes.post('/login', new UserController().login)
 
