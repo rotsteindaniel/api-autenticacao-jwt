@@ -27,7 +27,7 @@ export class UserController {
 		const hashPassword = await bcrypt.hash(password, 10)
 
 		const newUser = {
-			id: JSON.stringify(Math.random()*1000000000000000),
+			id: JSON.stringify(Math.random() * 1000000000000000),
 			name,
 			email,
 			password: hashPassword,
@@ -36,6 +36,21 @@ export class UserController {
 		users.push(newUser);
 
 		return res.status(201).json(newUser)
+	}
+
+	async edit(req: Request, res: Response) {
+		const { id } = req.user;
+		const { name, email } = req.body
+
+		const userIndex = users.findIndex(user => user.id === id);
+
+		if (userIndex === -1) {
+			return new BadRequestError("Usuário não encontrado")
+		}
+
+		users[userIndex] = { ...users[userIndex], name, email };
+
+		return res.status(200).json({ users, message: 'Usuário atualizado com sucesso' })
 	}
 
 	async login(req: Request, res: Response) {

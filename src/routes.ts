@@ -11,5 +11,6 @@ routes.post('/login', new UserController().login)
 routes.use(authMiddleware)
 
 routes.get('/profile', new UserController().getProfile)
+routes.put('/user/edit', new UserController().edit)
 
 export default routes
