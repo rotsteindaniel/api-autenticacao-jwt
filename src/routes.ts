@@ -12,5 +12,6 @@ routes.use(authMiddleware)
 
 routes.get('/profile', new UserController().getProfile)
 routes.put('/user/edit', new UserController().edit)
+routes.delete('/user', new UserController().delete)
 
 export default routes

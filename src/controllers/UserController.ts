@@ -15,6 +15,20 @@ export class UserController {
 		return res.status(200).json(users)
 	}
 
+	async delete(req: Request, res: Response) {
+		const { id } = req.user;
+
+		const userIndex = users.findIndex(user => user.id === id);
+
+		if (userIndex === -1) {
+			return new BadRequestError("Usuário não encontrado")
+		}
+
+		users.splice(userIndex, 1);
+
+		return res.status(200).json({ users, message: 'Usuário deletado com sucesso' })
+	}
+
 	async create(req: Request, res: Response) {
 		const { name, email, password } = req.body
 
@@ -36,21 +50,6 @@ export class UserController {
 		users.push(newUser);
 
 		return res.status(201).json(newUser)
-	}
-
-	async edit(req: Request, res: Response) {
-		const { id } = req.user;
-		const { name, email } = req.body
-
-		const userIndex = users.findIndex(user => user.id === id);
-
-		if (userIndex === -1) {
-			return new BadRequestError("Usuário não encontrado")
-		}
-
-		users[userIndex] = { ...users[userIndex], name, email };
-
-		return res.status(200).json({ users, message: 'Usuário atualizado com sucesso' })
 	}
 
 	async login(req: Request, res: Response) {
@@ -84,5 +83,20 @@ export class UserController {
 
 	async getProfile(req: Request, res: Response) {
 		return res.json(req.user)
+	}
+
+	async edit(req: Request, res: Response) {
+		const { id } = req.user;
+		const { name, email } = req.body
+
+		const userIndex = users.findIndex(user => user.id === id);
+
+		if (userIndex === -1) {
+			return new BadRequestError("Usuário não encontrado")
+		}
+
+		users[userIndex] = { ...users[userIndex], name, email };
+
+		return res.status(200).json({ users, message: 'Usuário atualizado com sucesso' })
 	}
 }
