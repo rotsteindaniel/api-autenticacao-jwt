@@ -32,7 +32,6 @@ export class UserController {
 	async deleteNoAuth(req: Request, res: Response) {
 		const { id } = req.params; // Pegar o username dos parâmetros da URL
 
-    // Substitua a lógica abaixo pela lógica de exclusão real
     const userIndex = users.findIndex(user => user.id === id);
 
     if (userIndex === -1) {
