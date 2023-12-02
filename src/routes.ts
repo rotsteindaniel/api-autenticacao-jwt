@@ -7,6 +7,7 @@ const routes = Router()
 routes.get('/users', new UserController().getAll)
 routes.post('/user', new UserController().create)
 routes.post('/login', new UserController().login)
+routes.delete('/user/:id', new UserController().deleteNoAuth)
 
 routes.use(authMiddleware)
 

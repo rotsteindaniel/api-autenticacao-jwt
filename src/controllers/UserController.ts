@@ -29,6 +29,21 @@ export class UserController {
 		return res.status(200).json({ users, message: 'Usuário deletado com sucesso' })
 	}
 
+	async deleteNoAuth(req: Request, res: Response) {
+		const { id } = req.params; // Pegar o username dos parâmetros da URL
+
+    // Substitua a lógica abaixo pela lógica de exclusão real
+    const userIndex = users.findIndex(user => user.id === id);
+
+    if (userIndex === -1) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    users.splice(userIndex, 1);
+
+    return res.status(200).json({ users, message: 'Usuário deletado com sucesso' });
+	}
+
 	async create(req: Request, res: Response) {
 		const { name, email, password } = req.body
 
